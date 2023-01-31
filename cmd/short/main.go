@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -11,31 +10,25 @@ import (
 )
 
 func main() {
+	// Read in environment variables
 	viper.SetConfigFile(".env")
 	viper.ReadInConfig()
-	fmt.Println(viper.Get("PORT"))
+	// Start new echo instance
 	e := echo.New()
+	// Initialize test endpoints
 	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
+		return c.String(http.StatusOK, "Ok")
 	})
-	e.GET("/test", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World! test")
-	})
-
+	// Initialize database
 	db.Init()
 
-	//Gets first link
-	var link db.Link
-	db.Instance.First(&link, 1)
-
-	//Print the first entry
-	fmt.Println(link)
-
-	// base group
+	// Create Routing groups - similar to express router
 	g := e.Group("")
 	g2 := e.Group("/create")
+	// Register handlers - pass the router we just created into the handler package to register the endpoints.
 	handlers.RegisterBaseGroup(g)
 	handlers.RegisterCreateGroup(g2)
 
+	// Start Server
 	e.Logger.Fatal(e.Start(":" + viper.GetString("PORT")))
 }

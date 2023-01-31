@@ -9,6 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// CreateLink takes a string parameter original, which represents the original URL to shorten.
 func CreateLink(original string) (string, error) {
 	// First search db to check if link exists, this should search for original. If original exists, return existing short.
 	var link db.Link
@@ -26,6 +27,7 @@ func CreateLink(original string) (string, error) {
 	return short, nil
 }
 
+// GetLink takes a string parameter short, which represents the shortened URL to retrieve the original URL for.
 func GetLink(short string) (string, error) {
 	var link db.Link
 	result := db.Instance.First(&link, "short = ?", short)
@@ -35,6 +37,7 @@ func GetLink(short string) (string, error) {
 	return link.Original, nil
 }
 
+// GetAllLinks returns all links in the database.
 func GetAllLinks() ([]db.Link, error) {
 	var links []db.Link
 	result := db.Instance.Find(&links)

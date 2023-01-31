@@ -14,11 +14,12 @@ func Init() {
 	if err != nil {
 		panic("failed to connect database")
 	}
-	//Creates entry
+	//Creates database entry and hoists it to exported var for other packages to interact with DB
 	Instance = db
 }
 
 func AutoMigrate() {
+	// Generates migrations which creates the tables in the database
 	Instance.AutoMigrate(&Link{})
 }
 

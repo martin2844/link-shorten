@@ -7,6 +7,8 @@ import (
 	"github.com/martin2844/link-shorten/pkg/links"
 )
 
+// Handlers are like controllers. They handle the request and return a response.
+// The logic here could be further abstracted into a service layer.
 func getLinkHandler(c echo.Context) error {
 	short := c.Param("short")
 	original, err := links.GetLink(short)
