@@ -6,12 +6,12 @@ require (
 	github.com/labstack/echo/v4 v4.10.0
 	github.com/lynxsecurity/viper v1.10.0
 	gorm.io/driver/mysql v1.4.5
-	gorm.io/gorm v1.24.3
+	gorm.io/gorm v1.25.3
 )
 
 require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
-	github.com/go-sql-driver/mysql v1.7.0 // indirect
+	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect

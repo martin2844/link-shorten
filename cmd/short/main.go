@@ -21,6 +21,7 @@ func main() {
 	})
 	// Initialize database
 	db.Init()
+	db.AutoMigrate()
 
 	// Create Routing groups - similar to express router
 	g := e.Group("")
@@ -28,7 +29,6 @@ func main() {
 	// Register handlers - pass the router we just created into the handler package to register the endpoints.
 	handlers.RegisterBaseGroup(g)
 	handlers.RegisterCreateGroup(g2)
-
 	// Start Server
 	e.Logger.Fatal(e.Start(":" + viper.GetString("PORT")))
 }

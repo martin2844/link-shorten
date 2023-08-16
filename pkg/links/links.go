@@ -2,6 +2,7 @@ package links
 
 import (
 	"errors"
+	"fmt"
 	"math/rand"
 	"time"
 
@@ -19,6 +20,7 @@ func CreateLink(original string) (string, error) {
 	}
 	// If original does not exist, create new link and return short.
 	short := randString(8)
+	fmt.Println(short)
 	newLink := db.Link{Original: original, Short: short}
 	result = db.Instance.Create(&newLink)
 	if result.Error != nil {
@@ -28,13 +30,18 @@ func CreateLink(original string) (string, error) {
 }
 
 // GetLink takes a string parameter short, which represents the shortened URL to retrieve the original URL for.
-func GetLink(short string) (string, error) {
+func GetLink(short string) (*db.Link, error) {
 	var link db.Link
 	result := db.Instance.First(&link, "short = ?", short)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return "", result.Error
+		return nil, result.Error
 	}
-	return link.Original, nil
+
+	// Increase the view count by 1
+	link.ViewCount++
+	db.Instance.Save(&link)
+
+	return &link, nil
 }
 
 // GetAllLinks returns all links in the database.
