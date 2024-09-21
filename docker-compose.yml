@@ -1,23 +1,32 @@
-# Use root/example as user/password credentials
 version: '3.1'
-
 services:
-
   db:
-    image: mysql
-    # NOTE: use of "mysql_native_password" is not recommended: https://dev.mysql.com/doc/refman/8.0/en/upgrading-from-previous-series.html#upgrade-caching-sha2-password
-    # (this is just an example, not intended to be a production configuration)
-    command: --default-authentication-plugin=mysql_native_password
+    image: mysql:8.0
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: links
     ports:
       - '3306:3306'
-    expose:
-      - '3306'
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   adminer:
     image: adminer
     restart: always
     ports:
       - 8080:8080
+
+  app:
+    build: .
+    ports:
+      - "8081:8081"
+    environment:
+      PORT: 8081
+      DB: 'root:example@tcp(db:3306)/links?charset=utf8mb4&parseTime=True&loc=Local'
+    depends_on:
+      db:
+        condition: service_healthy

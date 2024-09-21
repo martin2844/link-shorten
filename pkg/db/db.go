@@ -13,13 +13,35 @@ import (
 var Instance *gorm.DB
 
 func Init() {
-	dsn := viper.GetString("DB")
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	if err != nil {
-		panic("failed to connect database")
-	}
-	//Creates database entry and hoists it to exported var for other packages to interact with DB
-	Instance = db
+    // Ensure Viper is configured to read environment variables
+    viper.AutomaticEnv()
+    
+    dsn := viper.GetString("DB")
+    if dsn == "" {
+        panic("DB connection string not found in Viper configuration")
+    }
+
+    var db *gorm.DB
+    var err error
+
+    // Retry logic
+    for i := 0; i < 5; i++ {
+        db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+        if err == nil {
+            break
+        }
+        fmt.Printf("Failed to connect to database. Retrying in 5 seconds... (Attempt %d/5)\n", i+1)
+        time.Sleep(5 * time.Second)
+    }
+
+    if err != nil {
+        panic(fmt.Sprintf("failed to connect database after 5 attempts: %v", err))
+    }
+
+    fmt.Println("Successfully connected to the database")
+
+    // Creates database entry and hoists it to exported var for other packages to interact with DB
+    Instance = db
 }
 
 func AutoMigrate() {
